@@ -1,27 +1,30 @@
 import ModernRIBs
 
 protocol FinanceHomeDependency: Dependency {
-  
+    var superPayRepository: SuperPayRepository { get }
 }
 
 //SuperPayDashboardDependency = 자식 리블렛의 디펜던시.
 final class FinanceHomeComponent: Component<FinanceHomeDependency>, 
                                     SuperPayDashboardDependency,
-                                  CardOnFileDashboardDependency
+                                  CardOnFileDashboardDependency,
+                                  AddPaymentMethodDependency,
+                                  TopupDependency
 {
     //ReadOnlyCurrentValuePublisher 는 CurrentValuePublisher의 자식 클래스라서 자동으로 타입 클래스.
     //balance = send를 호출할 수 없음.
-    var balance: ReadOnlyCurrentValuePublisher<Double> { balancePublisher }
+    var balance: ReadOnlyCurrentValuePublisher<Double> { superPayRepository.balance }
     let cardOnFileRepository: CardOnFileReposistory
-    private let balancePublisher: CurrentValuePublisher<Double>
+    var topupBaseViewController: ViewControllable
+    var superPayRepository: SuperPayRepository { dependency.superPayRepository }
     
     init(
         dependency: FinanceHomeDependency,
-        balance: CurrentValuePublisher<Double>,
-        cardOnFileRepository: CardOnFileReposistory
+        cardOnFileRepository: CardOnFileReposistory,
+        topupBaseViewController: ViewControllable
     ) {
         self.cardOnFileRepository = cardOnFileRepository
-        self.balancePublisher = balance
+        self.topupBaseViewController = topupBaseViewController
         super.init(dependency: dependency)
     }
 }
@@ -40,25 +43,29 @@ final class FinanceHomeBuilder: Builder<FinanceHomeDependency>, FinanceHomeBuild
     
     func build(withListener listener: FinanceHomeListener) -> FinanceHomeRouting {
         //현재 리블렛에서 생성하는것이 맞다고 판단( finance를 담당하는 "홈"
-        let balancePublisher = CurrentValuePublisher<Double>(10000)
+        let viewController = FinanceHomeViewController()
         
         let component = FinanceHomeComponent(
             dependency: dependency,
-            balance: balancePublisher,
-            cardOnFileRepository: CardOnFileReposistoryImp()
+            cardOnFileRepository: CardOnFileReposistoryImp(),            
+            topupBaseViewController: viewController
         )
-        let viewController = FinanceHomeViewController()
+        
         let interactor = FinanceHomeInteractor(presenter: viewController)
         interactor.listener = listener
         
         let superPayDashboardBuilder = SuperPayDashboardBuilder(dependency: component)
         let cardOnFileDashboardBuilder = CardOnFileDashboardBuilder(dependency: component)
+        let addPaymentMethodBuilder = AddPaymentMethodBuilder(dependency: component)
+        let topupBuildable = TopupBuilder(dependency: component)
         
         return FinanceHomeRouter(
             interactor: interactor,
             viewController: viewController, 
             superPayDashboardBuildable: superPayDashboardBuilder,
-            cardOnFileDashboardBuilable: cardOnFileDashboardBuilder
+            cardOnFileDashboardBuilable: cardOnFileDashboardBuilder,
+            addPaymentMethodBuildable: addPaymentMethodBuilder,
+            topupBuildable: topupBuildable
         )
     }
 }

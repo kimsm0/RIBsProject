@@ -2,13 +2,18 @@ import ModernRIBs
 import UIKit
 
 protocol AppRootDependency: Dependency {
-  // TODO: Declare the set of dependencies required by this RIB, but cannot be
-  // created by this RIB.
+  
 }
 
 final class AppRootComponent: Component<AppRootDependency>, AppHomeDependency, FinanceHomeDependency, ProfileHomeDependency  {
-  
-  // TODO: Declare 'fileprivate' dependencies that are only used by this RIB.
+    var superPayRepository:  SuperPayRepository
+    
+    init(dependency: AppRootDependency,
+        superPayRepository: SuperPayRepository
+    ) {
+        self.superPayRepository = superPayRepository
+        super.init(dependency: dependency)
+    }
 }
 
 // MARK: - Builder
@@ -24,7 +29,10 @@ final class AppRootBuilder: Builder<AppRootDependency>, AppRootBuildable {
   }
   
   func build() -> (launchRouter: LaunchRouting, urlHandler: URLHandler) {
-    let component = AppRootComponent(dependency: dependency)
+    let component = AppRootComponent(
+        dependency: dependency,
+        superPayRepository: SuperPayRepositoryImp()
+    )
     
     let tabBar = RootTabBarController()
     

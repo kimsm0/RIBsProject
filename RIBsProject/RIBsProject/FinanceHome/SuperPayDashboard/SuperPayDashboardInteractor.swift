@@ -7,6 +7,7 @@
 
 import ModernRIBs
 import Combine
+import Foundation
 
 protocol SuperPayDashboardRouting: ViewableRouting {
     
@@ -18,7 +19,7 @@ protocol SuperPayDashboardPresentable: Presentable {
 }
 
 protocol SuperPayDashboardListener: AnyObject {
-    
+    func superPayDashboardDidTap()
 }
 
 //생성인자로 받아야할 것들을 이렇게 프로토콜로 따로 빼서 관리해주면, 나중에 수정할 부분이 줄어들 수 있다. 
@@ -47,7 +48,9 @@ final class SuperPayDashboardInteractor: PresentableInteractor<SuperPayDashboard
         super.didBecomeActive()
         
         //인터렉터에서 값을 업데이트 할 때는 프레젠터를 호출.
-        dependency.balance.sink {[weak self] balance in
+        dependency.balance
+            .receive(on: DispatchQueue.main)
+            .sink {[weak self] balance in
             self?.presenter.updateBalance(balance.decimalFormat)
         }.store(in: &subscriptions)
     }
@@ -55,5 +58,11 @@ final class SuperPayDashboardInteractor: PresentableInteractor<SuperPayDashboard
     override func willResignActive() {
         super.willResignActive()
         
+    }
+}
+
+extension SuperPayDashboardInteractor {
+    func topupButtonDidTap() {
+        listener?.superPayDashboardDidTap()
     }
 }

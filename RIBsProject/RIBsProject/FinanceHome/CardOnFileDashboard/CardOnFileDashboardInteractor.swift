@@ -17,8 +17,9 @@ protocol CardOnFileDashboardPresentable: Presentable {
     func update(with viewModels: [PaymentMethodViewModel])
 }
 
+//부모 리블렛의 인터렉터 프로토콜
 protocol CardOnFileDashboardListener: AnyObject {
-    
+    func cardOnFileDashboardDidTabAddPaymentMethod()
 }
 
 protocol CardOnFileDashboardInteractorDependency {
@@ -58,5 +59,15 @@ final class CardOnFileDashboardInteractor: PresentableInteractor<CardOnFileDashb
         //retain cycle 삭제됨. weak self 안해줘도 되는 방법. 
         subscriptions.forEach{ $0.cancel() }
         subscriptions.removeAll()
+    }
+}
+extension CardOnFileDashboardInteractor {
+    func didTabAddPaymentMethod() {
+        /*
+         현재 리블렛은 FinanceHome 리블렛의 일부 영역 뷰를 담당하는 리블렛.
+         현재 리블렛에서 modal로 하위 리블렛의 화면을 띄워도 상관 없지만, 프로젝트 전체 구조로 봤을 때,
+         전체 리블렛인 (부분 리블렛이 아닌)FinanceHome에서 연결하는것이 자연스러움.
+         */
+        listener?.cardOnFileDashboardDidTabAddPaymentMethod()
     }
 }

@@ -17,10 +17,14 @@ final class NavigationControllerable: ViewControllable {
   }
 }
 
+/*
+ UIViewController에는 present 등의 메서드 없음.
+ 모든 곳에서 공통으로 사용하기 때문에, 따로 정의함.
+ */
 extension ViewControllable {
   
   func present(_ viewControllable: ViewControllable, animated: Bool, completion: (() -> Void)?) {
-    self.uiviewController.present(viewControllable.uiviewController, animated: true, completion: completion)
+    self.uiviewController.present(viewControllable.uiviewController, animated: animated, completion: completion)
   }
   
   func dismiss(completion: (() -> Void)?) {
