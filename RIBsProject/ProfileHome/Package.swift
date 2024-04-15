@@ -5,19 +5,20 @@ import PackageDescription
 
 let package = Package(
     name: "ProfileHome",
+    platforms: [.iOS(.v13)],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "ProfileHome",
-            targets: ["ProfileHome"]),
+            name: "Profile",
+            targets: ["Profile"]),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/DevYeom/ModernRIBs", from: .init(1, 0, 1)),
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "ProfileHome"),
-        .testTarget(
-            name: "ProfileHomeTests",
-            dependencies: ["ProfileHome"]),
+            name: "Profile",
+        dependencies: [
+            "ModernRIBs"
+        ]),
     ]
 )

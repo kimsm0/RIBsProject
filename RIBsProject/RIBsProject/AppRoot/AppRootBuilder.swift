@@ -1,20 +1,15 @@
 import ModernRIBs
 import UIKit
+import FinanceRepository
+import Finance
+import AppHome
+import Profile
 
 protocol AppRootDependency: Dependency {
   
 }
 
-final class AppRootComponent: Component<AppRootDependency>, AppHomeDependency, FinanceHomeDependency, ProfileHomeDependency  {
-    var superPayRepository:  SuperPayRepository
-    
-    init(dependency: AppRootDependency,
-        superPayRepository: SuperPayRepository
-    ) {
-        self.superPayRepository = superPayRepository
-        super.init(dependency: dependency)
-    }
-}
+
 
 // MARK: - Builder
 
@@ -29,12 +24,14 @@ final class AppRootBuilder: Builder<AppRootDependency>, AppRootBuildable {
   }
   
   func build() -> (launchRouter: LaunchRouting, urlHandler: URLHandler) {
-    let component = AppRootComponent(
-        dependency: dependency,
-        superPayRepository: SuperPayRepositoryImp()
-    )
+      let tabBar = RootTabBarController()
     
-    let tabBar = RootTabBarController()
+      let component = AppRootComponent(
+        dependency: dependency,
+        superPayRepository: SuperPayRepositoryImp(),
+        cardOnFileRepository: CardOnFileReposistoryImp(),
+        rootViewController: tabBar    
+      )
     
     let interactor = AppRootInteractor(presenter: tabBar)
     

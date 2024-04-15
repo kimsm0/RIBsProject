@@ -5,19 +5,39 @@ import PackageDescription
 
 let package = Package(
     name: "TransportHome",
+    platforms: [.iOS(.v13)],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "TransportHome",
-            targets: ["TransportHome"]),
+            name: "Transport",
+            targets: ["Transport"]),
+        .library(
+            name: "TransportImp",
+            targets: ["TransportImp"]),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/DevYeom/ModernRIBs", from: .init(1, 0, 1)),                
+        .package(path: "../FinaceHome"),
+        .package(path: "../Platform"),
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "TransportHome"),
-        .testTarget(
-            name: "TransportHomeTests",
-            dependencies: ["TransportHome"]),
+            name: "TransportImp",
+        dependencies: [
+            "ModernRIBs",
+            "Transport",
+            .product(name: "FinanceRepository", package: "FinaceHome"),
+            .product(name: "Utils", package: "Platform"),
+        ],
+        resources: [
+            .process("Resources")
+        ]),
+        .target(
+            name: "Transport",
+        dependencies: [
+            "ModernRIBs",
+        ],
+        resources: [
+            
+        ]),
     ]
 )

@@ -17,6 +17,9 @@ public protocol CardOnFileReposistory {
 
 public final class CardOnFileReposistoryImp: CardOnFileReposistory{
         
+    public init(){
+        
+    }
     public var cardOnfFile: ReadOnlyCurrentValuePublisher<[PaymentMethodModel]>{
         paymentMethodsubject
     }
