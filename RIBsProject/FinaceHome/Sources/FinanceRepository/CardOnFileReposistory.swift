@@ -9,16 +9,27 @@ import Foundation
 import Combine
 import FinanceEntity
 import CombineUtil
+import Network
 
 public protocol CardOnFileReposistory {
     var cardOnfFile: ReadOnlyCurrentValuePublisher<[PaymentMethodModel]> { get }
     func addCard(info: AddPaymentMethodInfo) -> AnyPublisher<PaymentMethodModel, Error>
+    func fetch()
 }
 
 public final class CardOnFileReposistoryImp: CardOnFileReposistory{
         
-    public init(){
-        
+    private let network: Network
+    private let baseURL: URL
+    
+    private var subscriptions: Set<AnyCancellable>
+    public init(
+        network: Network,
+        baseURL: URL
+    ){
+        self.subscriptions = .init()
+        self.network = network
+        self.baseURL = baseURL
     }
     public var cardOnfFile: ReadOnlyCurrentValuePublisher<[PaymentMethodModel]>{
         paymentMethodsubject
@@ -34,15 +45,39 @@ public final class CardOnFileReposistoryImp: CardOnFileReposistory{
     ])
     
     public func addCard(info: AddPaymentMethodInfo) -> AnyPublisher<PaymentMethodModel, Error> {
-        let newCardModel = PaymentMethodModel(id: "00", name: "NEW 카드", digits: "\(info.numnber.suffix(4))", color: "#65c466ff", isPrimary: false)
         
-        var new = paymentMethodsubject.value
-        new.insert(newCardModel, at: 0)
-        paymentMethodsubject.send(new)
+        let request = AddCardRequest(baseURL: baseURL, info: info)
+        return network.send(request)
+            .map(\.output.card)
+            .handleEvents(receiveSubscription: nil,
+                          receiveOutput: { [weak self] method in
+                
+                guard let this = self else {
+                    return
+                }
+                this.paymentMethodsubject.send(this.paymentMethodsubject.value + [method])
+            })            
+            .eraseToAnyPublisher()        
         
-        return Just(newCardModel)
-            .setFailureType(to: Error.self)
-            .eraseToAnyPublisher()
+//        let newCardModel = PaymentMethodModel(id: "00", name: "NEW 카드", digits: "\(info.numnber.suffix(4))", color: "#65c466ff", isPrimary: false)
+//        
+//        var new = paymentMethodsubject.value
+//        new.insert(newCardModel, at: 0)
+//        paymentMethodsubject.send(new)
+//        
+//        return Just(newCardModel)
+//            .setFailureType(to: Error.self)
+//            .eraseToAnyPublisher()
     }
     
+    public func fetch() {
+        let request = CardOnFileRequest(baseURL: baseURL)
+        network.send(request)
+            .map(\.output.cards)
+            .sink { completion in
+                
+            } receiveValue: { [weak self] cards in
+                self?.paymentMethodsubject.send(cards)
+            }.store(in: &subscriptions)
+    }
 }

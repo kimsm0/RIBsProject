@@ -17,6 +17,8 @@ import Topup
 import TopupImp
 import AddPaymentMethod
 import AddPaymentMethodImp
+import Network
+import NetworkImp
 
 final class AppRootComponent: Component<AppRootDependency>, AppHomeDependency, FinanceHomeDependency, ProfileHomeDependency, TransportHomeDependency, TopupDependency, AddPaymentMethodDependency  {
     
@@ -41,13 +43,17 @@ final class AppRootComponent: Component<AppRootDependency>, AppHomeDependency, F
     private let rootViewController: ViewControllable
     
     init(dependency: AppRootDependency,
-         superPayRepository: SuperPayRepository,
-         cardOnFileRepository: CardOnFileReposistory,
          rootViewController: ViewControllable
     ) {
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [RIBsProjectAppURLProtocol.self]
+        setupURLProtocol()
+        let network = NetworkImp(session: URLSession(configuration: config))
+        
         self.rootViewController = rootViewController
-        self.cardOnFileRepository = cardOnFileRepository
-        self.superPayRepository = superPayRepository
+        self.cardOnFileRepository = CardOnFileReposistoryImp(network: network, baseURL: BaseURL().financeBaseURL)
+        self.cardOnFileRepository.fetch()
+        self.superPayRepository = SuperPayRepositoryImp(network: network, baseURL: BaseURL().financeBaseURL)
         super.init(dependency: dependency)
     }
 }

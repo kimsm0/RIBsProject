@@ -9,6 +9,7 @@ import ModernRIBs
 import Combine
 import FinanceRepository
 import FinanceEntity
+import Foundation
 
 protocol CardOnFileDashboardRouting: ViewableRouting {
     
@@ -50,6 +51,7 @@ final class CardOnFileDashboardInteractor: PresentableInteractor<CardOnFileDashb
     override func didBecomeActive() {
         super.didBecomeActive()
         depengency?.cardOnFileRepository.cardOnfFile
+            .receive(on: DispatchQueue.main)
             .sink(receiveValue: {list in
                 let viewModels = list.prefix(3).map(PaymentMethodViewModel.init)
                 self.presenter.update(with: viewModels)

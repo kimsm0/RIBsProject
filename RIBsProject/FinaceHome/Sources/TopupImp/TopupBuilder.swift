@@ -23,7 +23,8 @@ public protocol TopupDependency: Dependency {
     var addPaymentMethodBuilder: AddPaymentMethodBuildable { get }
 }
 
-final class TopupComponent: Component<TopupDependency>, TopupInteractorDependency, AddPaymentMethodDependency, EnterAmountDependency, CardOnFileDependency {
+final class TopupComponent: Component<TopupDependency>, TopupInteractorDependency, AddPaymentMethodDependency, EnterAmountDependency, CardOnFileDependency {    
+    
     var superPayRepository: SuperPayRepository { dependency.superPayRepository }
         
     var selectedPaymentMethod: ReadOnlyCurrentValuePublisher<PaymentMethodModel> {

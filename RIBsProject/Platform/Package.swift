@@ -19,6 +19,15 @@ let package = Package(
         .library(
             name: "Utils",
             targets: ["Utils"]),
+        .library(
+            name: "Network",
+            targets: ["Network"]),
+        .library(
+            name: "NetworkImp",
+            targets: ["NetworkImp"]),
+        .library(
+            name: "DefaultsStore",
+            targets: ["DefaultsStore"]),
     ],
     dependencies: [
         .package(url: "https://github.com/CombineCommunity/CombineExt", from: .init(1, 0, 0)),
@@ -45,6 +54,24 @@ let package = Package(
         ),
         .target(
             name: "Utils",
+            dependencies: [
+                
+            ]
+        ),
+        .target(
+            name: "Network",
+            dependencies: [
+                
+            ]
+        ),
+        .target(
+            name: "NetworkImp",
+            dependencies: [
+                "Network"
+            ]
+        ),
+        .target(
+            name: "DefaultsStore",
             dependencies: [
                 
             ]

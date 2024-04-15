@@ -26,6 +26,7 @@ import SuperUI
 import Utils
 import Topup
 
+
 protocol TopupRouting: Routing {
     func cleanupViews()
     func attachAddPaymentMethod(closeButtonType: DismissButtonType)
@@ -41,7 +42,7 @@ protocol TopupRouting: Routing {
 
 protocol TopupInteractorDependency{
     var cardOnFileRepository: CardOnFileReposistory { get }
-    var paymentMethodStream: CurrentValuePublisher<PaymentMethodModel> { get }
+    var paymentMethodStream: CurrentValuePublisher<PaymentMethodModel> { get }    
 }
 
 final class TopupInteractor: Interactor, TopupInteractable, AdaptivePresentationControllerDelegate {
