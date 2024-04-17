@@ -19,9 +19,13 @@ import AddPaymentMethod
 import AddPaymentMethodImp
 import Network
 import NetworkImp
+import CombineSchedulers
 
 final class AppRootComponent: Component<AppRootDependency>, AppHomeDependency, FinanceHomeDependency, ProfileHomeDependency, TransportHomeDependency, TopupDependency, AddPaymentMethodDependency  {
     
+    var mainQueue: AnySchedulerOf<DispatchQueue> {
+        .main
+    }
     lazy var addPaymentMethodBuilder: AddPaymentMethodBuildable = {
         return AddPaymentMethodBuilder(dependency: self)
     }()
@@ -45,9 +49,15 @@ final class AppRootComponent: Component<AppRootDependency>, AppHomeDependency, F
     init(dependency: AppRootDependency,
          rootViewController: ViewControllable
     ) {
+        
+        #if UITESTING
+        let config = URLSessionConfiguration.default
+        #else
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [RIBsProjectAppURLProtocol.self]
         setupURLProtocol()
+        #endif
+        
         let network = NetworkImp(session: URLSession(configuration: config))
         
         self.rootViewController = rootViewController

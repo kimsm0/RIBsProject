@@ -36,6 +36,7 @@ final class AppHomeViewController: UIViewController, AppHomePresentable, AppHome
     views.forEach {
       $0.addShadowWithRoundedCorners(12)
       widgetStackView.addArrangedSubview($0)
+        
     }
   }
   

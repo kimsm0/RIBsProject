@@ -15,8 +15,7 @@ struct HomeWidgetViewModel {
 final class HomeWidgetView: UIView {
   
   init(viewModel: HomeWidgetViewModel) {
-    super.init(frame: .zero)
-    
+    super.init(frame: .zero)      
     setupViews()
     update(with: viewModel)
   }

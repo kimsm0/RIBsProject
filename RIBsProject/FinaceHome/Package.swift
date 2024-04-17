@@ -20,6 +20,9 @@ let package = Package(
             name: "FinanceRepository",
             targets: ["FinanceRepository"]),
         .library(
+            name: "FinanceRepositoryTestSupport",
+            targets: ["FinanceRepositoryTestSupport"]),
+        .library(
             name: "Topup",
             targets: ["Topup"]),
         .library(
@@ -28,6 +31,9 @@ let package = Package(
         .library(
             name: "Finance",
             targets: ["Finance"]),
+        .library(
+            name: "TopupTestSupport",
+            targets: ["TopupTestSupport"]),
     ],
     dependencies: [
         .package(url: "https://github.com/DevYeom/ModernRIBs", from: .init(1, 0, 1)),
@@ -59,6 +65,13 @@ let package = Package(
             .product(name: "Network", package: "Platform")
         ]),
         .target(
+            name: "FinanceRepositoryTestSupport",
+        dependencies: [
+            "FinanceEntity",
+            "FinanceRepository",
+            .product(name: "CombineUtil", package: "Platform"),
+        ]),
+        .target(
             name: "Topup",
         dependencies: [
             "ModernRIBs",
@@ -69,8 +82,9 @@ let package = Package(
             .product(name: "RIBsUtil", package: "Platform"),
             .product(name: "SuperUI", package: "Platform"),
             .product(name: "Utils", package: "Platform"),
-            .product(name: "Network", package: "Platform")
+            .product(name: "Network", package: "Platform"),            
         ]),
+                
         .target(
             name: "Finance",
         dependencies: [
@@ -95,5 +109,22 @@ let package = Package(
             "FinanceEntity",
             .product(name: "RIBsUtil", package: "Platform"),
         ]),
+        .target(name: "TopupTestSupport",
+                   dependencies: [
+                    "Topup",
+                   ]),
+        .testTarget(name: "TopupImpTests",
+                   dependencies: [
+                    "TopupImp",
+                    "FinanceRepositoryTestSupport",
+                    "TopupTestSupport",
+                    //.product(name: "RIBsTestSupport", package: "Platform"),
+                    .product(name: "PlatformTestSupport", package: "Platform"),
+                   ],
+                    exclude: [
+                        "EnterAmount/__Snapshots__",                        
+                    ]
+                   ),
+        
     ]
 )

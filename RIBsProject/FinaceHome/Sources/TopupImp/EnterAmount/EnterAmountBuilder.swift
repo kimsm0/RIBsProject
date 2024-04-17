@@ -4,15 +4,17 @@
 //
 //  Created by kimsoomin_mac2022 on 4/13/24.
 //
-
+import Foundation
 import ModernRIBs
 import CombineUtil
 import FinanceEntity
 import FinanceRepository
+import CombineSchedulers
 
 protocol EnterAmountDependency: Dependency {
     var selectedPaymentMethod: ReadOnlyCurrentValuePublisher<PaymentMethodModel> { get }
     var superPayRepository: SuperPayRepository { get }
+    var mainQueue: AnySchedulerOf<DispatchQueue> { get }
 }
 
 final class EnterAmountComponent: Component<EnterAmountDependency>, EnterAmountInteractorDependency {
@@ -21,6 +23,9 @@ final class EnterAmountComponent: Component<EnterAmountDependency>, EnterAmountI
     }
     var superPayRepository: SuperPayRepository {
         dependency.superPayRepository
+    }
+    var mainQueue: AnySchedulerOf<DispatchQueue> {
+        dependency.mainQueue
     }
 }
 

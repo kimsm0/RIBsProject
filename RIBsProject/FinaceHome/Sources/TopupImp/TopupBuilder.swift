@@ -4,7 +4,7 @@
 //
 //  Created by kimsoomin_mac2022 on 4/13/24.
 //
-
+import Foundation
 import ModernRIBs
 import FinanceRepository
 import FinanceEntity
@@ -12,6 +12,8 @@ import AddPaymentMethodImp
 import AddPaymentMethod
 import CombineUtil
 import Topup
+import CombineSchedulers
+
 /*
  현재 리블렛이 필요한 것들을 정의함
  해당 리블렛은 viewless 리블렛이므로, 부모 리블렛이 뷰컨을 하나 지정해주어야 한다.
@@ -21,6 +23,7 @@ public protocol TopupDependency: Dependency {
     var cardOnFileRepository: CardOnFileReposistory { get }
     var superPayRepository: SuperPayRepository { get }
     var addPaymentMethodBuilder: AddPaymentMethodBuildable { get }
+    var mainQueue: AnySchedulerOf<DispatchQueue> { get }
 }
 
 final class TopupComponent: Component<TopupDependency>, TopupInteractorDependency, AddPaymentMethodDependency, EnterAmountDependency, CardOnFileDependency {    
@@ -37,6 +40,10 @@ final class TopupComponent: Component<TopupDependency>, TopupInteractorDependenc
     
     var addPaymentMethodBuilder: AddPaymentMethodBuildable {
         dependency.addPaymentMethodBuilder
+    }
+    
+    var mainQueue: AnySchedulerOf<DispatchQueue> {
+        dependency.mainQueue
     }
     
     fileprivate var topupBaseViewController: ViewControllable {

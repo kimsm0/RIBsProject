@@ -8,6 +8,9 @@ let package = Package(
     platforms: [.iOS(.v13)],
     products: [
         .library(
+            name: "PlatformTestSupport",
+            targets: ["PlatformTestSupport"]),
+        .library(
             name: "CombineUtil",
             targets: ["CombineUtil"]),
         .library(
@@ -32,12 +35,16 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/CombineCommunity/CombineExt", from: .init(1, 0, 0)),
         .package(url: "https://github.com/DevYeom/ModernRIBs", from: .init(1, 0, 1)),
+        .package(url: "https://github.com/pointfreeco/combine-schedulers", from: .init(1, 0, 0)),
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: .init(1, 12, 0)),
+        .package(url: "https://github.com/httpswift/swifter.git", from: .init(1, 5, 0)),
     ],
     targets: [
         .target(
             name: "CombineUtil",
             dependencies: [
-                "CombineExt"
+                "CombineExt",
+                .product(name: "CombineSchedulers", package: "combine-schedulers")
             ]
         ),
         .target(
@@ -74,6 +81,13 @@ let package = Package(
             name: "DefaultsStore",
             dependencies: [
                 
+            ]
+        ),
+        .target(
+            name: "PlatformTestSupport",
+            dependencies: [
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                .product(name: "Swifter", package: "swifter"),                
             ]
         ),
     ]

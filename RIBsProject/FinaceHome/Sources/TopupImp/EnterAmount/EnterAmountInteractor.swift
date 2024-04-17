@@ -11,6 +11,7 @@ import Foundation
 import CombineUtil
 import FinanceEntity
 import FinanceRepository
+import CombineSchedulers
 
 protocol EnterAmountRouting: ViewableRouting {
     
@@ -32,6 +33,7 @@ protocol EnterAmountListener: AnyObject {
 protocol EnterAmountInteractorDependency {
     var selectedpaymentMethod: ReadOnlyCurrentValuePublisher<PaymentMethodModel> { get }
     var superPayRepository: SuperPayRepository { get }
+    var mainQueue: AnySchedulerOf<DispatchQueue> { get }
 }
 
 final class EnterAmountInteractor: PresentableInteractor<EnterAmountPresentable>, EnterAmountInteractable, EnterAmountPresentableListener {
@@ -85,7 +87,7 @@ extension EnterAmountInteractor {
             amount: amount,
             paymentMethodID: dependency.selectedpaymentMethod.value.id
         )
-        .receive(on: DispatchQueue.main)
+        .receive(on: dependency.mainQueue)
         .sink {[weak self] completion in
             self?.presenter.stopLoading()
         } receiveValue: {[weak self] _ in
